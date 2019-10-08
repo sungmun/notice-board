@@ -1,0 +1,7 @@
+{
+    "name": "notice-board",
+    "version": "1.0.0",
+    "main": "index.js",
+    "author": "tjdans174@gmail.com",
+    "license": "MIT"
+}
