@@ -7,6 +7,7 @@
     "devDependencies": {
         "@babel/core": "^7.6.4",
         "@babel/node": "^7.6.3",
-        "@babel/preset-env": "^7.6.3"
+        "@babel/preset-env": "^7.6.3",
+        "eslint": "^6.6.0"
     }
 }
