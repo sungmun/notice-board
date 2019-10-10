@@ -1,0 +1,13 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltInt": "usage",
+        "targets": {
+          "node": "10.16.2"
+        }
+      }
+    ]
+  ]
+}
