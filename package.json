@@ -1,20 +1,20 @@
 {
-    "name": "notice-board",
-    "version": "1.0.0",
-    "main": "index.js",
-    "author": "tjdans174@gmail.com",
-    "license": "MIT",
-    "devDependencies": {
-        "@babel/core": "^7.6.4",
-        "@babel/node": "^7.6.3",
-        "@babel/preset-env": "^7.6.3",
-        "eslint": "^6.6.0",
-        "eslint-config-airbnb-base": "^14.0.0",
-        "eslint-config-prettier": "^6.4.0",
-        "prettier": "^1.18.2"
-    },
-    "dependencies": {
-        "@babel/polyfill": "^7.6.0",
-        "core-js": "3"
-    }
+  "name": "notice-board",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "tjdans174@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.4.0",
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.6.0",
+    "core-js": "3"
+  }
 }
