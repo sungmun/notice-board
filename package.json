@@ -17,5 +17,8 @@
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
     "core-js": "3"
+  },
+  "scripts": {
+    "start": "babel-node src/index.js"
   }
 }
