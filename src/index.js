@@ -1,11 +1,16 @@
 import express from 'express';
 import morgan from 'morgan';
+import router from './router';
+
+const port = process.env.PORT || 3000;
 
 const app = express();
 
 app.use(morgan('dev'));
 
-app.listen(3000, () => {
+app.use(router);
+
+app.listen(port, () => {
   console.log('server start');
 });
 
