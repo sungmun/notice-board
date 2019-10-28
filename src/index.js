@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import router from './router';
 
 const port = process.env.PORT || 3000;
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const app = express();
 
