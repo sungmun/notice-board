@@ -1,11 +1,12 @@
 import Sequelize from 'sequelize';
-import { uuidV4 } from '../utile/dataBaseUtil';
 
-class Post extends Sequelize.Model {
-  static init(sequelize) {
+import { uuidV4 } from '../utils/index.utile';
+
+export default class Post extends Sequelize.Model {
+  static init(_, options) {
     return super.init(
       {
-        idx: { type: Sequelize.NUMBER, primaryKey: true, allowNull: false },
+        idx: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         title: {
           type: Sequelize.STRING,
           validate: { notEmpty: true },
@@ -22,11 +23,15 @@ class Post extends Sequelize.Model {
           defaultValue: uuidV4(),
         },
       },
-      { sequelize, timestamps: true },
+      {
+        sequelize: options.sequelize,
+        timestamps: true,
+        paranoid: true,
+      },
     );
   }
 
-  static associations(models) {
+  static associate(models) {
     this.belongsTo(models.User, {
       onDelete: 'CASCADE',
       foreignKey: {
@@ -41,5 +46,3 @@ class Post extends Sequelize.Model {
     });
   }
 }
-
-export default Post;
