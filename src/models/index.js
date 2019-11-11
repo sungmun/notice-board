@@ -1,36 +1,53 @@
+import config from '../configs/default';
+import Sequelize from 'sequelize';
 import fs from 'fs';
 import path from 'path';
-import Sequelize from 'sequelize';
-import configSetting from 'config';
 
-const basename = path.basename(__filename);
-// const env = process.env.NODE_ENV || 'development';
-const config = configSetting.get('databaseConfig');
-const db = {};
+class Database {
+  constructor() {
+    this._sequelize = new Sequelize({
+      dialect: config.DATABASE_DIALECT,
+      database: config.DATABASE_DATABASE,
+      username: config.DATABASE_USERNAME,
+      password: config.DATABASE_PASSWORD,
+      host: config.DATABASE_HOST,
+    });
+    this._models = {};
 
-const sequelize = config.use_env_variable
-  ? new Sequelize(process.env[config.use_env_variable], config)
-  : new Sequelize(config.database, config.username, config.password, config);
+    // Load each model file
+    const models = Object.assign(
+      {},
+      ...fs
+        .readdirSync(__dirname)
+        .filter(file => file.indexOf('.') !== 0 && file !== 'index.js')
+        .map(file => {
+          const model = require(path.join(__dirname, file)).default;
 
-fs.readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js'
+          return {
+            [model.name]: model.init(null, { sequelize: this._sequelize }),
+          };
+        }),
     );
-  })
-  .forEach(file => {
-    // eslint-disable-next-line global-require,import/no-dynamic-require
-    const model = require(path.join(__dirname, file)).default;
-    db[model.name] = model.init(sequelize);
-  });
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
+    // Load model associations
+    for (const model of Object.keys(models)) {
+      typeof models[model].associate === 'function' &&
+        models[model].associate(models);
+    }
+
+    this._models = models;
   }
-});
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+  get sequelize() {
+    return this._sequelize;
+  }
 
-module.exports = db;
+  get models() {
+    return this._models;
+  }
+}
+
+const database = new Database();
+
+export const models = database.models;
+export const sequelize = database.sequelize;
