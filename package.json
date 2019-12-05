@@ -8,6 +8,8 @@
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
     "@babel/node": "^7.6.3",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-export-default-from": "^7.7.4",
     "@babel/preset-env": "^7.6.3",
     "core-js": "3",
     "eslint": "^6.6.0",
@@ -21,11 +23,14 @@
     "@babel/polyfill": "^7.6.0",
     "express": "^4.17.1",
     "morgan": "^1.9.1",
+    "mysql2": "^2.0.2",
     "pm2": "^4.1.2",
-    "sequelize": "^5.21.2"
+    "sequelize": "^5.21.2",
+    "sequelize-cli": "^5.5.1",
+    "uuid4": "^1.1.4"
   },
   "scripts": {
-    "start": "babel-node src/index.js",
+    "start": "babel-node src/serve.js",
     "start:watch": "nodemon --exec babel-node src/index.js",
     "start:pm2": "pm2 src/index.js --name notice-board --interpreter babel-node"
   }
