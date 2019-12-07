@@ -2,13 +2,14 @@ import {
   BaseError as DataBaseException,
   ValidationError as ValidationException,
 } from 'sequelize';
-
+import { request, response } from 'express';
 import BaseException from '../exceptions/Base.exception';
+
 /**
  * @param error {Error}
- * @param req {Request}
- * @param res {Response}
- * @param next {NextFunction}
+ * @param req {request}
+ * @param res {response}
+ * @param next {function}
  * @returns {*}
  * @constructor 에러 처리 모듈로 에러의 타입이 BaseException 에러인경우 서버 오류라는 메세지를 전달한다.
  * 이 에러는 이미 파악을 하고 있으며 처리를 한 오류로 크게 문제는 되지 않는 에러에 해당한다.
@@ -18,6 +19,23 @@ export function BaseError(error, req, res, next) {
     return next(error);
   }
   res.status(error.status).json({ message: error.message });
+  next();
+}
+
+/**
+ * @param error {Error}
+ * @param req {request}
+ * @param res {response}
+ * @param next {function}
+ * @returns {*}
+ * @constructor 에러 처리 모듈로 에러의 타입이 ValidationException 에러인경우 오류메세지를 전달한다.
+ * 문제가 되는 부분중 1개만 전달해 준다.
+ */
+export function ValidationError(error, req, res, next) {
+  if (!(error instanceof ValidationException)) {
+    return next(error);
+  }
+  res.status(500).json({ message: error.errors[0].message });
   next();
 }
 

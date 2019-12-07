@@ -1,7 +1,12 @@
 import express from 'express';
 import logger from 'morgan';
 import { sequelize } from './models';
-import { BaseError, DataBaseError, Error } from './middleware/error.middleware';
+import {
+  BaseError,
+  DataBaseError,
+  Error,
+  ValidationError,
+} from './middleware/error.middleware';
 import { RouteAsyncWarp } from './middleware/RouteAsyncWarp.middleware';
 import notFoundPath from './exceptions/notFoundPath.exception';
 
@@ -49,6 +54,7 @@ class App {
 
   initializeErrorHandling() {
     this.express.use(BaseError);
+    this.express.use(ValidationError);
     //미 처리 오류
     this.express.use(DataBaseError);
     this.express.use(Error);
