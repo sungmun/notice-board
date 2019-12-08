@@ -1,7 +1,4 @@
-import {
-  BaseError as DataBaseException,
-  ValidationError as ValidationException,
-} from 'sequelize';
+import { BaseError as DataBaseException, ValidationError as ValidationException } from 'sequelize';
 import { request, response } from 'express';
 import BaseException from '../exceptions/Base.exception';
 
@@ -52,10 +49,6 @@ export function ValidationError(error, req, res, next) {
 export function DataBaseError(error, req, res, next) {
   if (!(error instanceof DataBaseException)) {
     return next(error);
-  }
-  if (error instanceof ValidationException) {
-    res.status(500).json({ message: error.errors[0].message });
-    return next();
   }
 
   res.status(500).json({ message: '서버 데이터 베이스 오류입니다.' });
