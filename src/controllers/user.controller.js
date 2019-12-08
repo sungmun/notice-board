@@ -1,4 +1,5 @@
 import { models } from '../models';
+
 export default class UserController {
   User = models.User;
   getUsers = async (req, res) => {
@@ -16,5 +17,18 @@ export default class UserController {
 
     const { password, updatedAt, createdAt, ...result } = user.toJSON();
     return res.json({ user: { ...result } });
+  };
+
+  loginUser = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await this.User.findOne({ where: { email } });
+    const isPassword = await this.User.validPassword(
+      password,
+      user.get('password'),
+      user.get('hash'),
+    );
+
+    if (isPassword) return res.json({ success: true });
+    return res.json({ success: false });
   };
 }
