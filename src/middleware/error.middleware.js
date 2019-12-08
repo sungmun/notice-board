@@ -41,9 +41,9 @@ export function ValidationError(error, req, res, next) {
 
 /**
  * @param error {Error}
- * @param req {Request}
- * @param res {Response}
- * @param next {NextFunction}
+ * @param req {request}
+ * @param res {response}
+ * @param next {function}
  * @returns {*}
  * @constructor 에러 처리 모듈로 에러의 타입이 DatabaseError 에러인경우 서버 오류라는 메세지를 전달한다.
  * 이때 오류에 부분을 파악후 이부분에 대한 오류에 대한 메세지를 추가를 해줘야 한다.
@@ -64,9 +64,9 @@ export function DataBaseError(error, req, res, next) {
 
 /**
  * @param error {Error}
- * @param req {Request}
- * @param res {Response}
- * @param next {NextFunction}
+ * @param req {request}
+ * @param res {response}
+ * @param next {function}
  * @returns {*}
  * @constructor 에러 처리 모듈로 에러의 타입이 DatabaseError 에러인경우 서버 오류라는 메세지를 전달한다.
  * 이때 오류에 부분을 파악후 이부분에 대한 오류에 대한 메세지를 추가를 해줘야 한다.
