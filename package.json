@@ -10,6 +10,7 @@
     "@babel/node": "^7.6.3",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/plugin-proposal-export-default-from": "^7.7.4",
+    "@babel/plugin-proposal-throw-expressions": "^7.8.0",
     "@babel/preset-env": "^7.6.3",
     "core-js": "3",
     "eslint": "^6.6.0",
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
+    "@hapi/joi": "16.1.8",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
