@@ -13,5 +13,6 @@ export default class userRoute {
   initializeRoutes() {
     this.router.get(`${this.path}`, this.userController.getUsers);
     this.router.post(`${this.path}`, this.userController.createUser);
+    this.router.post(`${this.path}/auth`, this.userController.loginUser);
   }
 }
