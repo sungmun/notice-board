@@ -1,4 +1,7 @@
-import { BaseError as DataBaseException, ValidationError as ValidationException } from 'sequelize';
+import {
+  BaseError as DataBaseException,
+  ValidationError as ValidationException,
+} from 'sequelize';
 import { request, response } from 'express';
 import BaseException from '../exceptions/Base.exception';
 
