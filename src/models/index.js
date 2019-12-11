@@ -1,7 +1,8 @@
-import config from '../configs/default';
 import Sequelize from 'sequelize';
 import fs from 'fs';
 import path from 'path';
+
+const config = process.env;
 
 class Database {
   constructor() {

@@ -1,3 +1,4 @@
+import './configs/default';
 import express from 'express';
 import logger from 'morgan';
 import { sequelize } from './models';
