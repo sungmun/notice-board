@@ -79,10 +79,10 @@ export default class User extends Sequelize.Model {
     return scryptSync(val, salt, 64, { N: 1024 }).toString('hex');
   }
 
-  static validPassword(inputPassword, password, salt) {
-    const hash = scryptSync(inputPassword, salt, 64, { N: 1024 }).toString(
-      'hex',
-    );
-    return hash === password;
+  static validPassword(inputPassword, { password, hash }) {
+    const hashPassword = scryptSync(inputPassword, hash, 64, {
+      N: 1024,
+    }).toString('hex');
+    return hashPassword === password;
   }
 }
