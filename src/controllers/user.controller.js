@@ -1,34 +1,21 @@
-import { models } from '../models';
+import { UserService } from '../services/user.service';
 
 export default class UserController {
-  User = models.User;
+  service = new UserService();
   getUsers = async (req, res) => {
     const { skip, task } = req.query;
-    const userList = await this.User.findAndCountAll({
-      offset: skip,
-      limit: task,
-    });
+    const userList = await this.service.getUserListPaging(skip, task);
     return res.json(userList);
   };
   createUser = async (req, res) => {
-    const user = await this.User.create({
-      ...req.body,
-    });
-
-    const { password, updatedAt, createdAt, ...result } = user.toJSON();
-    return res.json({ user: { ...result } });
+    const user = await this.service.createUser(req.body);
+    return res.json({ user });
   };
 
   loginUser = async (req, res) => {
     const { email, password } = req.body;
-    const user = await this.User.findOne({ where: { email } });
-    const isPassword = await this.User.validPassword(
-      password,
-      user.get('password'),
-      user.get('hash'),
-    );
+    const accessToken = await this.service.loginUser(email, password);
 
-    if (isPassword) return res.json({ success: true });
-    return res.json({ success: false });
+    return res.json({ accessToken });
   };
 }
