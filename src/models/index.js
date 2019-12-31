@@ -1,18 +1,19 @@
 import Sequelize from 'sequelize';
 import fs from 'fs';
 import path from 'path';
-
-const config = process.env;
+import config from '../config';
 
 class Database {
   constructor() {
+    // eslint-disable-next-line no-underscore-dangle
     this._sequelize = new Sequelize({
-      dialect: config.DATABASE_DIALECT,
-      database: config.DATABASE_DATABASE,
-      username: config.DATABASE_USERNAME,
-      password: config.DATABASE_PASSWORD,
-      host: config.DATABASE_HOST,
+      dialect: 'mysql',
+      database: config.database.mysql.name,
+      username: config.database.mysql.user,
+      password: config.database.mysql.password,
+      host: config.database.mysql.host,
     });
+    // eslint-disable-next-line no-underscore-dangle
     this._models = {};
 
     // Load each model file
@@ -22,6 +23,7 @@ class Database {
         .readdirSync(__dirname)
         .filter(file => file.indexOf('.') !== 0 && file !== 'index.js')
         .map(file => {
+          // eslint-disable-next-line global-require,import/no-dynamic-require
           const model = require(path.join(__dirname, file)).default;
 
           return {
@@ -31,7 +33,9 @@ class Database {
     );
 
     // Load model associations
+    // eslint-disable-next-line no-restricted-syntax
     for (const model of Object.keys(models)) {
+      // eslint-disable-next-line no-unused-expressions
       typeof models[model].associate === 'function' &&
         models[model].associate(models);
     }
@@ -50,5 +54,5 @@ class Database {
 
 const database = new Database();
 
-export const models = database.models;
-export const sequelize = database.sequelize;
+export const { models } = database;
+export const { sequelize } = database;
