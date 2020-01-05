@@ -24,6 +24,6 @@ jobs:
         # Beanstalk application name
         application_name: notice-board-node
         # Beanstalk environment name
-        environment_name: 
+        environment_name: NoticeBoardNode-env
         # Version label for new Beanstalk version
         version_label: ${branchVersion}
