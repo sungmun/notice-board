@@ -1,12 +1,11 @@
 import Sequelize from 'sequelize';
 import { uuidV4 } from '../utils/index.utile';
-import { scryptSync } from 'crypto';
 
 export default class User extends Sequelize.Model {
   static init(_, options) {
     return super.init(
       {
-        idx: {
+        id: {
           type: Sequelize.INTEGER,
           primaryKey: true,
           autoIncrement: true,
@@ -48,14 +47,6 @@ export default class User extends Sequelize.Model {
         sequelize: options.sequelize,
         timestamps: true,
         paranoid: true,
-        hooks: {
-          beforeCreate: user => {
-            user.password = this.inCodingPassword(user.password, user.hash);
-          },
-          beforeUpdate: user => {
-            user.password = this.inCodingPassword(user.password, user.hash);
-          },
-        },
       },
     );
   }
@@ -73,16 +64,5 @@ export default class User extends Sequelize.Model {
         allowNull: false,
       },
     });
-  }
-
-  static inCodingPassword(val, salt) {
-    return scryptSync(val, salt, 64, { N: 1024 }).toString('hex');
-  }
-
-  static validPassword(inputPassword, { password, hash }) {
-    const hashPassword = scryptSync(inputPassword, hash, 64, {
-      N: 1024,
-    }).toString('hex');
-    return hashPassword === password;
   }
 }

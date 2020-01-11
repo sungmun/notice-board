@@ -1,12 +1,17 @@
 import Sequelize from 'sequelize';
 
 import { uuidV4 } from '../utils/index.utile';
+import User from './User';
 
 export default class Post extends Sequelize.Model {
   static init(_, options) {
     return super.init(
       {
-        idx: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
         title: {
           type: Sequelize.STRING,
           validate: { notEmpty: true },
@@ -21,6 +26,14 @@ export default class Post extends Sequelize.Model {
           primaryKey: true,
           type: Sequelize.UUID,
           defaultValue: uuidV4(),
+        },
+        userId: {
+          allowNull: false,
+          type: Sequelize.NUMBER,
+          references: {
+            model: User,
+            key: 'id',
+          },
         },
       },
       {
