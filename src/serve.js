@@ -1,8 +1,8 @@
 import App from './app';
-import indexRoute from './routes/index.route';
-import userRoute from './routes/user.route';
+import IndexRoute from './routes/index.route';
+import UserRoute from './routes/user.route';
 
-const app = new App([new indexRoute(), new userRoute()]);
+const app = new App([new IndexRoute(), new UserRoute()]);
 
 app
   .listen()

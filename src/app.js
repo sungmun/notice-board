@@ -1,4 +1,3 @@
-import './configs/default';
 import express from 'express';
 import logger from 'morgan';
 import { sequelize } from './models';
@@ -9,11 +8,9 @@ import {
   ValidationError,
 } from './middleware/error.middleware';
 import { RouteAsyncWarp } from './middleware/RouteAsyncWarp.middleware';
-import notFoundPath from './exceptions/notFoundPath.exception';
+import { NotFoundPath } from './exceptions/notFoundPath.exception';
 
 class App {
-  express;
-  port;
   constructor(routes) {
     this.express = express();
     this.port = process.env.PORT;
@@ -27,7 +24,7 @@ class App {
     await this.initializeDataBase();
   }
 
-  async initializeDataBase() {
+  static async initializeDataBase () {
     if (process.env.DATABASE_SYNC) {
       return sequelize.sync();
     }
@@ -48,15 +45,15 @@ class App {
     routes.forEach(route => {
       this.express.use('/', RouteAsyncWarp(route.router));
     });
-    this.express.use((req, res, next) => {
-      throw new notFoundPath();
+    this.express.use(() => {
+      throw new NotFoundPath();
     });
   }
 
   initializeErrorHandling() {
     this.express.use(BaseError);
     this.express.use(ValidationError);
-    //미 처리 오류
+    // 미 처리 오류
     this.express.use(DataBaseError);
     this.express.use(Error);
   }
