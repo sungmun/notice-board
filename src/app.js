@@ -1,17 +1,12 @@
 import express from 'express';
 import logger from 'morgan';
-import { sequelize } from './models';
-import {
-  BaseError,
-  DataBaseError,
-  Error,
-  ValidationError,
-} from './middleware/error.middleware';
-import { RouteAsyncWarp } from './middleware/RouteAsyncWarp.middleware';
 import { NotFoundPath } from './exceptions/notFoundPath.exception';
+import { BaseError, DataBaseError, Error, ValidationError } from './middleware/error.middleware';
+import { RouteAsyncWarp } from './middleware/RouteAsyncWarp.middleware';
+import { sequelize } from './models';
 
 class App {
-  constructor(routes) {
+  constructor (routes) {
     this.express = express();
     this.port = process.env.PORT;
     this.initializeMiddleware();
