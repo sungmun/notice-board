@@ -1,15 +1,24 @@
-import { notFoundResource } from '../exceptions/notFoundResource.exception';
+import { scryptSync } from 'crypto';
+import { NotFoundResourceException } from '../exceptions/notFoundResource.exception';
 import { models } from '../models';
-export class UserDao {
-  model = models.User;
-  async findOneByEmailOrFail(email) {
-    const user = await this.model.findOne({ where: { email } });
-    if (!user) throw new notFoundResource(email);
+
+export class UserDao extends models.User {
+  static async findOneOrFail (option) {
+    const user = await UserDao.findOne(option);
+    if (!user) throw new NotFoundResourceException(user);
     return user;
   }
-  async findOneByIdxOrFail(idx) {
-    const user = await this.model.findOne({ where: { idx } });
-    if (!user) throw new notFoundResource(idx);
-    return user;
+
+  static inCodingPassword (val, salt) {
+    return scryptSync(val, salt, 64, { N: 1024 })
+      .toString('hex');
+  }
+
+  static validPassword (inputPassword, { password, hash }) {
+    const hashPassword = scryptSync(inputPassword, hash, 64, {
+      N: 1024,
+    })
+      .toString('hex');
+    return hashPassword === password;
   }
 }

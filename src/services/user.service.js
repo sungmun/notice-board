@@ -1,53 +1,43 @@
-import { models } from '../models';
-import jwt from 'jsonwebtoken';
-import { notFoundResource } from '../exceptions/notFoundResource.exception';
+import jsonwebtoken from 'jsonwebtoken';
+import { UserDao } from '../dao/user.dao';
+import { NotFoundResourceException } from '../exceptions/notFoundResource.exception';
 
 export class UserService {
-  model = models.User;
-
-  async createJWTToken(expiresIn, data) {
-    return new Promise((resolve, reject) =>
-      jwt.sign(
-        data,
-        process.env.PRIVATE_KEY,
-        { expiresIn, algorithm: 'HS256' },
-        (err, data) => {
-          if (err) reject(err);
-          resolve(data);
-        },
-      ),
-    );
+  static createJWTToken (expiresIn, data) {
+    return jsonwebtoken.sign(data, process.env.PRIVATE_KEY, {
+      expiresIn,
+      algorithm: 'HS256',
+    });
   }
 
-  createAccessToken(data) {
-    return this.createJWTToken('3h', data);
+  static createAccessToken (data) {
+    return UserService.createJWTToken('3h', data);
   }
 
-  getUserListPaging(offset, limit) {
-    return this.model.findAndCountAll({
+  static getUserListPaging (offset, limit) {
+    return UserDao.findAndCountAll({
       attributes: ['idx', 'name', 'email'],
       offset,
       limit,
     });
   }
 
-  async createUser(data = { password, email, name }) {
-    const user = await this.model.create(data);
-    const {
-      updatedAt,
-      createdAt,
-      deletedAt,
-      password,
-      hash,
-      ...result
-    } = user.toJSON();
-    return result;
+  static async createUser (userDto) {
+    const userRecord = await UserDao.create(userDto);
+    const { id, name, email } = userRecord.toJSON();
+    return {
+      id,
+      name,
+      email,
+    };
   }
 
-  async loginUser(email, password) {
-    const user = await this.model.findOneByEmailOrFail(email);
-    const isPassWord = this.model.validPassword(password, user.toJSON());
-    if (!isPassWord) throw new notFoundResource('password');
-    return await this.createAccessToken(user.toJSON());
+  static async loginUser (email, password) {
+    const userRecord = await UserDao.findOneOrFail({ where: { email } });
+    const userJson = userRecord.toJSON();
+    const isPassWord = UserDao.validPassword(password, userJson);
+    if (!isPassWord) throw new NotFoundResourceException('password');
+    const accessToken = await UserService.createAccessToken(userJson);
+    return { accessToken };
   }
 }

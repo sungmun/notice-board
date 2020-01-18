@@ -1,21 +1,21 @@
 import { UserService } from '../services/user.service';
 
 export default class UserController {
-  service = new UserService();
-  getUsers = async (req, res) => {
+  static async getUserList(req, res) {
     const { skip, task } = req.query;
-    const userList = await this.service.getUserListPaging(skip, task);
-    return res.json(userList);
-  };
-  createUser = async (req, res) => {
-    const user = await this.service.createUser(req.body);
-    return res.json({ user });
-  };
+    const result = await UserService.getUserListPaging(skip, task);
+    return res.json(result);
+  }
 
-  loginUser = async (req, res) => {
+  static async createUser(req, res) {
+    const userDto = req.body;
+    const user = await UserService.createUser(userDto);
+    return res.status(201).json({ user });
+  }
+
+  static async loginUser(req, res) {
     const { email, password } = req.body;
-    const accessToken = await this.service.loginUser(email, password);
-
-    return res.json({ accessToken });
-  };
+    const result = await UserService.loginUser(email, password);
+    return res.json(result);
+  }
 }

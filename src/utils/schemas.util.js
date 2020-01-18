@@ -1,4 +1,5 @@
 import * as Joi from '@hapi/joi';
+import { Segments } from 'celebrate';
 import ValidateException from '../exceptions/Validate.exception';
 
 const getUserQuerySchema = Joi.object({
@@ -36,14 +37,14 @@ const postUserAuthBodySchema = Joi.object({
 export default {
   User: {
     get: {
-      query: getUserQuerySchema,
+      [Segments.QUERY]: getUserQuerySchema,
     },
     post: {
-      body: postUserBodySchema,
+      [Segments.BODY]: postUserBodySchema,
     },
     auth: {
       post: {
-        body: postUserAuthBodySchema,
+        [Segments.BODY]: postUserAuthBodySchema,
       },
     },
   },
