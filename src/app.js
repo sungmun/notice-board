@@ -11,7 +11,7 @@ import { RouteAsyncWarp } from './middleware/RouteAsyncWarp.middleware';
 import { sequelize } from './models';
 
 class App {
-  constructor (routes) {
+  constructor(routes) {
     this.express = express();
     this.port = process.env.PORT;
     this.initializeMiddleware();
@@ -24,7 +24,7 @@ class App {
     await this.initializeDataBase();
   }
 
-  static async initializeDataBase () {
+  static async initializeDataBase() {
     if (process.env.DATABASE_SYNC) {
       return sequelize.sync();
     }
