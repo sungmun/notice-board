@@ -5,7 +5,11 @@ export default class Comment extends Sequelize.Model {
   static init(_, options) {
     return super.init(
       {
-        idx: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
         title: {
           type: Sequelize.STRING,
           validate: { notEmpty: true },

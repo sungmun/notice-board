@@ -1,11 +1,15 @@
 import Sequelize from 'sequelize';
-import { uuidV4, inCodingPassword, validPassword } from '../utils/index.utile';
+import { uuidV4 } from '../utils/index.utile';
 
 export default class User extends Sequelize.Model {
   static init(_, options) {
     return super.init(
       {
-        idx: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
         password: {
           type: Sequelize.CHAR(128),
           allowNull: false,
@@ -43,12 +47,6 @@ export default class User extends Sequelize.Model {
         sequelize: options.sequelize,
         timestamps: true,
         paranoid: true,
-        hooks: {
-          beforeCreate: user => {
-            user.password = inCodingPassword(user.password, user.hash);
-          },
-        },
-        instanceMethods: { validPassword },
       },
     );
   }

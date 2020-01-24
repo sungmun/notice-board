@@ -2,11 +2,10 @@ import { Router } from 'express';
 import IndexController from '../controllers/index.controller';
 
 export default class IndexRoute {
-  path = '/';
-  router = Router();
-  indexController = new IndexController();
-
   constructor() {
+    this.path = '/';
+    this.router = Router();
+    this.indexController = new IndexController();
     this.initializeRoutes();
   }
 
