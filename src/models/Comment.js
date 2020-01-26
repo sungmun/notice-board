@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import { uuidV4 } from '../utils/index.utile';
+import { MysqlConnect } from '../config';
 
 export default class Comment extends Sequelize.Model {
   static init(_, options) {
@@ -27,7 +28,7 @@ export default class Comment extends Sequelize.Model {
           defaultValue: uuidV4(),
         },
       },
-      { sequelize: options.sequelize, timestamps: true, paranoid: true },
+      { sequelize: MysqlConnect.getClient(), timestamps: true, paranoid: true },
     );
   }
 
