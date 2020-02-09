@@ -1,10 +1,10 @@
-import { NotFoundResourceException } from '../exceptions/notFoundResource.exception';
-import { models } from '../models';
+import { BaseError, ErrorMessage } from '../components';
+import { Post } from '../models';
 
-export class PostDao extends models.Post {
+export class PostDao extends Post {
   static async findOneOrFail(option) {
     const postRecord = await PostDao.findOne(option);
-    if (!postRecord) throw new NotFoundResourceException('PostRecord');
+    if (!postRecord) throw new BaseError(ErrorMessage.NotFoundResource('post'));
     return postRecord;
   }
 }
