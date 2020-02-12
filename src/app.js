@@ -1,14 +1,10 @@
 import express from 'express';
 import logger from 'morgan';
-import { NotFoundPath } from './exceptions/notFoundPath.exception';
-import {
-  BaseError,
-  DataBaseError,
-  Error,
-  ValidationError,
-} from './middleware/error.middleware';
-import { RouteAsyncWarp } from './middleware/RouteAsyncWarp.middleware';
-import { sequelize } from './models';
+import { errors } from 'celebrate';
+import { ErrorMessage } from './components';
+import { BaseException } from './components/Base.exception';
+import { MysqlConnect } from './config';
+import { errorHandle } from './middleware/error.middleware';
 
 class App {
   constructor(routes) {
@@ -21,14 +17,14 @@ class App {
 
   async listen() {
     this.express.listen(this.port);
-    await this.initializeDataBase();
+    await App.initializeDataBase();
   }
 
   static async initializeDataBase() {
     if (process.env.DATABASE_SYNC) {
-      return sequelize.sync();
+      return MysqlConnect.createConnection().sync();
     }
-    return sequelize;
+    return MysqlConnect.createConnection();
   }
 
   getServer() {
@@ -42,20 +38,17 @@ class App {
   }
 
   initializeRoutes(routes) {
-    routes.forEach(route => {
-      this.express.use('/', RouteAsyncWarp(route.router));
+    routes.forEach(controller => {
+      this.express.use(controller.router);
     });
     this.express.use(() => {
-      throw new NotFoundPath();
+      throw new BaseException(ErrorMessage.NotFoundPath);
     });
   }
 
   initializeErrorHandling() {
-    this.express.use(BaseError);
-    this.express.use(ValidationError);
-    // 미 처리 오류
-    this.express.use(DataBaseError);
-    this.express.use(Error);
+    this.express.use(errors());
+    this.express.use(errorHandle);
   }
 }
 
