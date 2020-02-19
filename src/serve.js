@@ -1,8 +1,7 @@
 import App from './app';
-import IndexRoute from './routes/index.route';
-import UserRoute from './routes/user.route';
+import { IndexRoute, UserRoute, PostRoute } from './routes';
 
-const app = new App([new IndexRoute(), new UserRoute()]);
+const app = new App([new IndexRoute(), new UserRoute(), new PostRoute()]);
 
 app
   .listen()
@@ -11,4 +10,4 @@ app
       `🚀 App listening on the port ${process.env.PORT}, and the NODE_ENV ${process.env.NODE_ENV} `,
     );
   })
-  .catch(console.log);
+  .catch(console.error);

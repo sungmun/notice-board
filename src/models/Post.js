@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import { MysqlConnect } from '../config';
 
 import { uuidV4 } from '../utils/index.utile';
 import User from './User';
@@ -37,7 +38,7 @@ export default class Post extends Sequelize.Model {
         },
       },
       {
-        sequelize: options.sequelize,
+        sequelize: MysqlConnect.getClient(),
         timestamps: true,
         paranoid: true,
       },

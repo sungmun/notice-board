@@ -1,0 +1,29 @@
+name: Elastic Beanstalk Deploy
+
+on: 
+  push:
+    tags: 
+      -*/v*.*.*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: split-branch-version
+      run: echo ::set-env name=branchVersion::${GITHUB_REF##*/}
+    - uses: actions/checkout@v1
+    - name: Beanstalk Deploy
+      uses: einaregilsson/beanstalk-deploy@v4
+      with:
+        # AWS Access Key
+        aws_access_key: ${{secrets.AwsAccessKey}}
+        # AWS Secret Key
+        aws_secret_key: ${{secrets.AwsSecretKey}}
+        # AWS Region
+        region: ap-northeast-2
+        # Beanstalk application name
+        application_name: notice-board-node
+        # Beanstalk environment name
+        environment_name: NoticeBoardNode-env
+        # Version label for new Beanstalk version
+        version_label: ${branchVersion}

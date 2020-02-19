@@ -1,4 +1,7 @@
+/* eslint-disable no-param-reassign */
+import { randomBytes, createHash } from 'crypto';
 import Sequelize from 'sequelize';
+import { MysqlConnect } from '../config';
 import { uuidV4 } from '../utils/index.utile';
 
 export default class User extends Sequelize.Model {
@@ -16,6 +19,9 @@ export default class User extends Sequelize.Model {
           validate: {
             notNull: { msg: '비밀번호를 입력해주세요' },
             notEmpty: { msg: '비밀번호를 입력해주세요' },
+          },
+          get() {
+            return () => this.getDataValue(`password`);
           },
         },
         name: {
@@ -42,9 +48,17 @@ export default class User extends Sequelize.Model {
           type: Sequelize.UUID,
           defaultValue: uuidV4(),
         },
+        salt: {
+          allowNull: false,
+          type: Sequelize.UUID,
+          defaultValue: uuidV4(),
+          get() {
+            return () => this.getDataValue(`salt`);
+          },
+        },
       },
       {
-        sequelize: options.sequelize,
+        sequelize: MysqlConnect.getClient(),
         timestamps: true,
         paranoid: true,
       },
@@ -65,4 +79,31 @@ export default class User extends Sequelize.Model {
       },
     });
   }
+
+  static generateSalt() {
+    return randomBytes(16).toString('base64');
+  }
+
+  static encryptPassword(plainText, salt) {
+    return createHash('RSA-SHA256')
+      .update(plainText)
+      .update(salt)
+      .digest('hex');
+  }
+
+  static setSaltAndPassword(user) {
+    if (!user.changed('password')) return;
+
+    user.salt = User.generateSalt();
+    user.password = User.encryptPassword(user.password(), user.salt());
+  }
+
+  correctPassword(enteredPassword) {
+    return (
+      User.encryptPassword(enteredPassword, this.salt()) === this.password()
+    );
+  }
 }
+
+User.beforeCreate = User.setSaltAndPassword;
+User.beforeUpdate = User.setSaltAndPassword;

@@ -1,11 +1,11 @@
 import { scryptSync } from 'crypto';
-import { NotFoundResourceException } from '../exceptions/notFoundResource.exception';
-import { models } from '../models';
+import { BaseError, ErrorMessage } from '../components';
+import { User } from '../models';
 
-export class UserDao extends models.User {
+export class UserDao extends User {
   static async findOneOrFail(option) {
     const user = await UserDao.findOne(option);
-    if (!user) throw new NotFoundResourceException(user);
+    if (!user) throw new BaseError(ErrorMessage.NotFoundResource('User'));
     return user;
   }
 

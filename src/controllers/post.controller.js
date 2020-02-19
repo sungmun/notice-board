@@ -1,22 +1,34 @@
 import { PostService } from '../services/post.service';
+import { Response } from '../components';
 
-export default class UserController {
-  static async getPostListPagination(req, res) {
+export default class PostController {
+  static getPostListPagination(req, res, next) {
     const { skip, task } = req.query;
-    const result = await PostService.getPostListPagination(skip, task);
-    return res.json(result);
+    return PostService.getPostListPagination(skip, task)
+      .then(Response.successRes(res))
+      .catch(next);
   }
 
-  static async getPost(req, res) {
+  static getPost(req, res, next) {
     const { postId } = req.params;
-    const userList = await PostService.postFindById(postId);
-    return res.json(userList);
+    return PostService.postFindById(postId)
+      .then(Response.successRes(res))
+      .catch(next);
   }
 
-  static async createPost(req, res) {
+  static createPost(req, res, next) {
     const postDto = req.body;
     const userId = req.user.id;
-    const result = await PostService.createPost(postDto, userId);
-    return res.status(201).json(result);
+    return PostService.createPost(postDto, userId)
+      .then(Response.createRes(res))
+      .catch(next);
+  }
+
+  static updatePost(req, res, next) {
+    const postDto = req.body;
+    const { postHash } = req.params;
+    return PostService.updatePost(postDto, postHash)
+      .then(Response.successRes(res))
+      .catch(next);
   }
 }

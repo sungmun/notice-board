@@ -1,8 +1,17 @@
-import {
-  BaseError as DataBaseException,
-  ValidationError as ValidationException,
-} from 'sequelize';
-import { BaseException } from '../exceptions/Base.exception';
+import { BaseError as DataBaseException } from 'sequelize';
+import { isCelebrate } from 'celebrate';
+import { ErrorMessage } from '../components';
+import errorMessage from '../components/ErrorMessage';
+import customResponse from '../components/customResponse';
+
+export const JoiErrprHandle = (error, req, res, next) => {
+  if (!isCelebrate(error)) {
+    return next(error);
+  }
+
+  console.log(error);
+  return next(error);
+};
 
 /**
  * @param error {Error}
@@ -13,30 +22,40 @@ import { BaseException } from '../exceptions/Base.exception';
  * @constructor 에러 처리 모듈로 에러의 타입이 BaseException 에러인경우 서버 오류라는 메세지를 전달한다.
  * 이 에러는 이미 파악을 하고 있으며 처리를 한 오류로 크게 문제는 되지 않는 에러에 해당한다.
  */
-export function BaseError(error, req, res, next) {
-  if (!(error instanceof BaseException)) {
-    return next(error);
+export function errorHandle(error, req, res) {
+  switch (error.name) {
+    case 'BaseError':
+      return customResponse.errorResponse(res, error);
+    case 'ValidationError':
+      return customResponse.errorDataBaseValidation(res, error);
+    case 'DataBaseException':
+      return customResponse.errorResponse(res, errorMessage.DataBase);
+    case 'TokenExpiredError':
+      return customResponse.errorResponse(
+        res,
+        errorMessage.AuthValidateToken('만료된 토큰입니다.'),
+      );
+    default:
+      return customResponse.errorResponse(res, errorMessage.InternalServer);
   }
-  res.status(error.status).json({ message: error.message });
-  next();
 }
 
-/**
- * @param error {Error}
- * @param req {request}
- * @param res {response}
- * @param next {function}
- * @returns {*}
- * @constructor 에러 처리 모듈로 에러의 타입이 ValidationException 에러인경우 오류메세지를 전달한다.
- * 문제가 되는 부분중 1개만 전달해 준다.
- */
-export function ValidationError(error, req, res, next) {
-  if (!(error instanceof ValidationException)) {
-    return next(error);
-  }
-  res.status(500).json({ message: error.errors[0].message });
-  next();
-}
+// /**
+//  * @param error {Error}
+//  * @param req {request}
+//  * @param res {response}
+//  * @param next {function}
+//  * @returns {*}
+//  * @constructor 에러 처리 모듈로 에러의 타입이 ValidationException 에러인경우 오류메세지를 전달한다.
+//  * 문제가 되는 부분중 1개만 전달해 준다.
+//  */
+// export function ValidationError(error, req, res, next) {
+//   if (!(error instanceof ValidationException)) {
+//     return next(error);
+//   }
+//   res.status(500).json({ message: error.errors[0].message });
+//   next();
+// }
 
 /**
  * @param error {Error}
