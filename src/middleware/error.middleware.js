@@ -1,17 +1,35 @@
-import { BaseError as DataBaseException } from 'sequelize';
+import { BaseError as DataBaseException, ValidationError } from 'sequelize';
 import { isCelebrate } from 'celebrate';
-import { ErrorMessage } from '../components';
+import { TokenExpiredError } from 'jsonwebtoken';
+import { BaseError, ErrorMessage } from '../components';
 import errorMessage from '../components/ErrorMessage';
 import customResponse from '../components/customResponse';
+import { BaseException } from '../components/Base.exception';
 
-export const JoiErrprHandle = (error, req, res, next) => {
+export const JoiErrorHandle = (error, req, res, next) => {
   if (!isCelebrate(error)) {
     return next(error);
   }
 
-  console.log(error);
-  return next(error);
+  const { joi } = error;
+  const { type, context } = joi.details[0];
+  if (/.required/.test(type)) {
+    throw new BaseError(
+      ErrorMessage.Validate(
+        `${context.label}(${context.key})은(는) 필수 값입니다`,
+      ),
+    );
+  }
+  return next();
 };
+
+export function databaseErrorHandle(error, req, res, next) {
+  if (!(error instanceof DataBaseException)) next(error);
+  if (error instanceof ValidationError) {
+    throw new BaseError(ErrorMessage.Validate(error.errors[0].message));
+  }
+  throw new BaseError(errorMessage.DataBase);
+}
 
 /**
  * @param error {Error}
@@ -22,22 +40,22 @@ export const JoiErrprHandle = (error, req, res, next) => {
  * @constructor 에러 처리 모듈로 에러의 타입이 BaseException 에러인경우 서버 오류라는 메세지를 전달한다.
  * 이 에러는 이미 파악을 하고 있으며 처리를 한 오류로 크게 문제는 되지 않는 에러에 해당한다.
  */
-export function errorHandle(error, req, res) {
-  switch (error.name) {
-    case 'BaseError':
-      return customResponse.errorResponse(res, error);
-    case 'ValidationError':
-      return customResponse.errorDataBaseValidation(res, error);
-    case 'DataBaseException':
-      return customResponse.errorResponse(res, errorMessage.DataBase);
-    case 'TokenExpiredError':
-      return customResponse.errorResponse(
-        res,
-        errorMessage.AuthValidateToken('만료된 토큰입니다.'),
-      );
-    default:
-      return customResponse.errorResponse(res, errorMessage.InternalServer);
+// eslint-disable-next-line consistent-return
+export function errorHandle(error, req, res, next) {
+  console.debug('errorHandle');
+  console.debug(error);
+  if (error instanceof BaseException) {
+    customResponse.errorResponse(res, error);
+  } else if (error instanceof TokenExpiredError) {
+    customResponse.errorResponse(
+      res,
+      errorMessage.AuthValidateToken('만료된 토큰입니다.'),
+    );
+  } else {
+    customResponse.errorResponse(res, errorMessage.InternalServer);
   }
+
+  next();
 }
 
 // /**
