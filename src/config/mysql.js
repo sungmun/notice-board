@@ -10,7 +10,9 @@ const createConnection = () => {
     username: config.database.mysql.user,
     password: config.database.mysql.password,
     host: config.database.mysql.host,
+    sync: config.database.mysql.configSync,
   });
+
   return client;
 };
 

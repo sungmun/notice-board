@@ -1,58 +1,36 @@
 import { Segments, Joi } from 'celebrate';
-import { BaseError, ErrorMessage } from '../../components';
+import { pagingSchema } from '../../components/Schemas';
 
-const getPostQuerySchema = Joi.object({
-  skip: Joi.number()
-    .integer()
-    .positive()
-    .error(new BaseError(ErrorMessage.Validate('skip 값은 정수를 입니다')))
-    .default(0),
-  task: Joi.number()
-    .integer()
-    .positive()
-    .error(new BaseError(ErrorMessage.Validate('task 값은 정수를 입니다')))
-    .default(100),
-});
-
-const PostHashParamsSchema = Joi.object({
-  postHash: Joi.string()
+const PostHashParamsSchema = {
+  hash: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('Post 의 hash 값이 없습니다'))),
-});
+    .label('게시물 Hash'),
+};
 
-const DataPostBodySchema = Joi.object({
+const DataPostBodySchema = {
   title: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('제목을 입력해주세요.'))),
+    .label('개시물 제목(title)'),
+
+  // .error(new BaseError(ErrorMessage.Validate('제목을 입력해주세요.'))),
   content: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('내용을 입력해주세요'))),
-});
-
-const postUserAuthBodySchema = Joi.object({
-  password: Joi.string()
-    .required()
-    .error(new BaseError(ErrorMessage.Validate('비밀번호를 입력해주세요'))),
-  email: Joi.string()
-    .required()
-    .error(new BaseError(ErrorMessage.Validate('이메일을 입력해주세요'))),
-});
+    .label('개시물 내용(content)'),
+};
 
 export default {
   get: {
-    list: { [Segments.QUERY]: getPostQuerySchema },
-    detail: { [Segments.PARAMS]: PostHashParamsSchema },
+    list: { [Segments.QUERY]: Joi.object(pagingSchema) },
+    detail: { [Segments.PARAMS]: Joi.object(PostHashParamsSchema) },
   },
   post: {
-    [Segments.BODY]: DataPostBodySchema,
+    [Segments.BODY]: Joi.object(DataPostBodySchema),
   },
   patch: {
-    [Segments.PARAMS]: PostHashParamsSchema,
-    [Segments.BODY]: DataPostBodySchema,
+    [Segments.PARAMS]: Joi.object(PostHashParamsSchema),
+    [Segments.BODY]: Joi.object(DataPostBodySchema),
   },
-  auth: {
-    post: {
-      [Segments.BODY]: postUserAuthBodySchema,
-    },
+  delete: {
+    [Segments.PARAMS]: Joi.object(PostHashParamsSchema),
   },
 };

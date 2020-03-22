@@ -1,9 +1,11 @@
-import { BaseError, ErrorMessage } from './index';
+import ErrorMessage from './ErrorMessage';
+import { BaseException as BaseError } from './Base.exception';
 
 const sendRes = (res, status) => entity => res.status(status).json(entity);
 
 const createRes = res => sendRes(res, 201);
 const successRes = res => sendRes(res, 200);
+const successAndNoContentRes = res => () => res.status(204).send();
 
 const errorResponse = (res, error) => {
   let status = 500;
@@ -23,6 +25,7 @@ const errorDataBaseValidation = (res, error) =>
 export default {
   successRes,
   createRes,
+  successAndNoContentRes,
   errorDataBaseValidation,
   errorResponse,
 };

@@ -1,10 +1,13 @@
 import express from 'express';
 import logger from 'morgan';
-import { errors } from 'celebrate';
 import { ErrorMessage } from './components';
 import { BaseException } from './components/Base.exception';
-import { MysqlConnect } from './config';
-import { errorHandle } from './middleware/error.middleware';
+import { MysqlConnect, config } from './config';
+import {
+  errorHandle,
+  JoiErrorHandle,
+  databaseErrorHandle,
+} from './middleware/error.middleware';
 
 class App {
   constructor(routes) {
@@ -21,7 +24,7 @@ class App {
   }
 
   static async initializeDataBase() {
-    if (process.env.DATABASE_SYNC) {
+    if (config.database.mysql.configSync) {
       return MysqlConnect.createConnection().sync();
     }
     return MysqlConnect.createConnection();
@@ -39,7 +42,7 @@ class App {
 
   initializeRoutes(routes) {
     routes.forEach(controller => {
-      this.express.use(controller.router);
+      this.express.use(controller.path, controller.router);
     });
     this.express.use(() => {
       throw new BaseException(ErrorMessage.NotFoundPath);
@@ -47,7 +50,8 @@ class App {
   }
 
   initializeErrorHandling() {
-    this.express.use(errors());
+    this.express.use(JoiErrorHandle);
+    this.express.use(databaseErrorHandle);
     this.express.use(errorHandle);
   }
 }

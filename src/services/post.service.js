@@ -6,7 +6,7 @@ import { PostDao } from '../dao/post.dao';
 export class PostService {
   static async getPostListPagination(offset, limit) {
     const { rows: list, count } = await PostDao.findAndCountAll({
-      attributes: ['idx', 'name', 'email'],
+      attributes: ['id', 'title', 'content', 'hash'],
       offset,
       limit,
     });
@@ -16,27 +16,34 @@ export class PostService {
     };
   }
 
-  static async postFindById(postId) {
-    const postRecord = await PostDao.findOneOrFail({ where: { id: postId } });
+  static async postFindByHash(hash) {
+    const postRecord = await PostDao.findOneOrFail({ where: { hash } });
 
-    return { ..._.pick(postRecord, ['id', 'title', 'content', 'hash']) };
+    return _.pick(postRecord, ['id', 'title', 'content', 'hash']);
   }
 
-  static async createPost(postDto, userId) {
+  static async createPost(postDto, userHash) {
     const postRecord = await PostDao.create({
       ...postDto,
-      userId,
+      userHash,
     });
+
     return _.pick(postRecord, ['id', 'title', 'content', 'hash', 'user']);
   }
 
   static async updatePost(postDto, postHash) {
-    const [changeRowCount, postRecord] = await PostDao.update(postDto, {
+    const [changeRowCount] = await PostDao.update(postDto, {
       where: { hash: postHash },
+      returning: true,
     });
+
     if (changeRowCount < 1) {
       throw new BaseError(ErrorMessage.NotFoundResource('Post'));
     }
-    return _.pick(postRecord, ['id', 'title', 'content', 'hash']);
+    
+  }
+
+  static async deletePost(hash) {
+    await PostDao.destroy({ where: { hash } });
   }
 }

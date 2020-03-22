@@ -8,6 +8,7 @@ export default {
       name: process.env.DATABASE_MYSQL_NAME,
       user: process.env.DATABASE_MYSQL_USER,
       password: process.env.DATABASE_MYSQL_PASSWORD,
+      configSync: process.env.DATABASE_SYNC,
     },
   },
   logs: {
