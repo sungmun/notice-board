@@ -7,38 +7,38 @@ import Post from './post.schemas';
 export class PostRoute {
   constructor() {
     this.path = '/post';
-    this.router = Router();
+    this.router = Router({ mergeParams: true });
     this.initializeRoutes();
   }
 
   initializeRoutes() {
     this.router.get(
-      `${this.path}`,
+      '/',
       celebrate(Post.get.list),
       PostController.getPostListPagination,
     );
     this.router.get(
-      `${this.path}/:postHash`,
+      '/:hash',
       celebrate(Post.get.detail),
       PostController.getPost,
     );
     this.router.post(
-      `${this.path}`,
+      '/',
       JwtDecoding,
       celebrate(Post.post),
       PostController.createPost,
     );
     this.router.patch(
-      `${this.path}/:postHash`,
+      '/:hash',
       JwtDecoding,
-      celebrate(Post.post),
+      celebrate(Post.patch),
       PostController.updatePost,
     );
     this.router.delete(
-      `${this.path}`,
+      '/:hash',
       JwtDecoding,
-      celebrate(Post.post),
-      PostController.createPost,
+      celebrate(Post.delete),
+      PostController.deletePost,
     );
   }
 }

@@ -10,25 +10,32 @@ export default class PostController {
   }
 
   static getPost(req, res, next) {
-    const { postId } = req.params;
-    return PostService.postFindById(postId)
+    const { hash } = req.params;
+    return PostService.postFindByHash(hash)
       .then(Response.successRes(res))
       .catch(next);
   }
 
   static createPost(req, res, next) {
     const postDto = req.body;
-    const userId = req.user.id;
-    return PostService.createPost(postDto, userId)
+    const userHash = req.user.hash;
+    return PostService.createPost(postDto, userHash)
       .then(Response.createRes(res))
       .catch(next);
   }
 
   static updatePost(req, res, next) {
     const postDto = req.body;
-    const { postHash } = req.params;
-    return PostService.updatePost(postDto, postHash)
-      .then(Response.successRes(res))
+    const { hash } = req.params;
+    return PostService.updatePost(postDto, hash)
+      .then(Response.successAndNoContentRes(res))
+      .catch(next);
+  }
+
+  static deletePost(req, res, next) {
+    const { hash } = req.params;
+    return PostService.deletePost(hash)
+      .then(Response.successAndNoContentRes(res))
       .catch(next);
   }
 }

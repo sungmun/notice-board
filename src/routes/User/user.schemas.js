@@ -1,49 +1,37 @@
-import * as Joi from '@hapi/joi';
-import { Segments } from 'celebrate';
-import { BaseError, ErrorMessage } from '../../components';
+import { Segments, Joi } from 'celebrate';
+import { pagingSchema } from '../../components/Schemas';
 
-const getUserQuerySchema = Joi.object({
-  skip: Joi.number()
-    .integer()
-    .positive()
-    .error(new BaseError(ErrorMessage.Validate('skip 값은 정수를 입니다')))
-    .default(0),
-  task: Joi.number()
-    .integer()
-    .positive()
-    .error(new BaseError(ErrorMessage.Validate('task 값은 정수를 입니다')))
-    .default(100),
-});
-
-const postUserBodySchema = Joi.object({
+const postUserBodySchema = {
   password: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('비밀번호를 입력해주세요'))),
+    .label('비밀번호'),
   name: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('이름을 입력해주세요'))),
+    .label('이름'),
   email: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('이메일을 입력해주세요'))),
-});
-const postUserAuthBodySchema = Joi.object({
+    .label('이메일'),
+};
+
+const postUserAuthBodySchema = {
   password: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('비밀번호를 입력해주세요'))),
+    .label('비밀번호'),
   email: Joi.string()
     .required()
-    .error(new BaseError(ErrorMessage.Validate('이메일을 입력해주세요'))),
-});
+    .label('이메일'),
+};
+
 export default {
   get: {
-    [Segments.QUERY]: getUserQuerySchema,
+    [Segments.QUERY]: Joi.object(pagingSchema),
   },
   post: {
-    [Segments.BODY]: postUserBodySchema,
+    [Segments.BODY]: Joi.object(postUserBodySchema),
   },
   auth: {
     post: {
-      [Segments.BODY]: postUserAuthBodySchema,
+      [Segments.BODY]: Joi.object(postUserAuthBodySchema),
     },
   },
 };

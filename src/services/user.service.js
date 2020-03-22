@@ -2,11 +2,11 @@ import _ from 'lodash';
 import jsonwebtoken from 'jsonwebtoken';
 import { UserDao } from '../dao/user.dao';
 import { ErrorMessage, BaseError } from '../components';
-import Config from '../config';
+import { config } from '../config';
 
 export class UserService {
   static createJWTToken(expiresIn, data) {
-    return jsonwebtoken.sign(data, Config.jwtSecret, {
+    return jsonwebtoken.sign(data, config.jwtSecret, {
       expiresIn,
       algorithm: 'HS256',
     });
@@ -16,12 +16,14 @@ export class UserService {
     return UserService.createJWTToken('3h', data);
   }
 
-  static getUserListPaging(offset, limit) {
-    return UserDao.findAndCountAll({
-      attributes: ['idx', 'name', 'email', 'hash'],
+  static async getUserListPaging(offset, limit) {
+    const { count, rows: list } = await UserDao.findAndCountAll({
+      attributes: ['id', 'name', 'email', 'hash'],
       offset,
       limit,
     });
+
+    return { count, list };
   }
 
   static async createUser(userDto) {
@@ -35,7 +37,10 @@ export class UserService {
     if (!isPassWord) {
       throw new BaseError(ErrorMessage.NotFoundResource('PassWord'));
     }
-    const accessToken = await UserService.createAccessToken(userRecord);
+
+    const accessToken = await UserService.createAccessToken({
+      hash: userRecord.hash,
+    });
     return { accessToken };
   }
 }

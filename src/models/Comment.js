@@ -1,63 +1,81 @@
 import Sequelize from 'sequelize';
+import config from '../config/config.constant';
 import { uuidV4 } from '../utils/index.utile';
 import { MysqlConnect } from '../config';
 
-export default class Comment extends Sequelize.Model {
-  static init(_, options) {
-    return super.init(
-      {
-        id: {
-          type: Sequelize.INTEGER,
-          primaryKey: true,
-          autoIncrement: true,
-        },
-        title: {
-          type: Sequelize.STRING,
-          validate: { notEmpty: true },
-        },
-        content: {
-          type: Sequelize.TEXT,
-          allowNull: false,
-          validate: { isNull: false },
-        },
+class Comment extends Sequelize.Model {}
 
-        hash: {
-          allowNull: false,
-          primaryKey: true,
-          type: Sequelize.UUID,
-          defaultValue: uuidV4(),
-        },
+Comment.init(
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    content: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+      validate: { notNull: true },
+    },
+    hash: {
+      allowNull: false,
+      primaryKey: true,
+      type: Sequelize.UUID,
+      defaultValue: uuidV4(),
+    },
+    userHash: {
+      allowNull: false,
+      type: Sequelize.UUID,
+      references: {
+        model: 'Users',
+        key: 'hash',
       },
-      { sequelize: MysqlConnect.getClient(), timestamps: true, paranoid: true },
-    );
-  }
+    },
+    postId: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Posts',
+        key: 'id',
+      },
+    },
+  },
+  {
+    indexes: [{ fields: ['hash'] }],
+    sequelize: MysqlConnect.getClient(),
+    timestamps: true,
+    paranoid: true,
+  },
+);
+// Comment.belongsTo(User, {
+//   onDelete: 'CASCADE',
+//   foreignKey: {
+//     allowNull: false,
+//   },
+// });
+//
+// Comment.belongsTo(Post, {
+//   onDelete: 'CASCADE',
+//   foreignKey: {
+//     allowNull: false,
+//   },
+// });
+//
+Comment.hasMany(Comment, {
+  as: 'child',
+  onDelete: 'CASCADE',
+  foreignKey: {
+    allowNull: true,
+  },
+});
 
-  static associate(models) {
-    this.belongsTo(models.User, {
-      onDelete: 'CASCADE',
-      foreignKey: {
-        allowNull: false,
-      },
-    });
-    this.belongsTo(models.Post, {
-      onDelete: 'CASCADE',
-      foreignKey: {
-        allowNull: false,
-      },
-    });
-    this.hasMany(models.Comment, {
-      as: 'child',
-      onDelete: 'CASCADE',
-      foreignKey: {
-        allowNull: false,
-      },
-    });
-    this.belongsTo(models.Comment, {
-      as: 'parent',
-      onDelete: 'CASCADE',
-      foreignKey: {
-        allowNull: false,
-      },
-    });
-  }
-}
+Comment.belongsTo(Comment, {
+  as: 'parent',
+  onDelete: 'CASCADE',
+  foreignKey: {
+    allowNull: true,
+  },
+});
+if (config.database.mysql.configSync) Comment.sync();
+
+export default Comment;

@@ -1,7 +1,12 @@
 import App from './app';
-import { IndexRoute, UserRoute, PostRoute } from './routes';
+import { IndexRoute, UserRoute, PostRoute, CommentRoute } from './routes';
 
-const app = new App([new IndexRoute(), new UserRoute(), new PostRoute()]);
+const app = new App([
+  new IndexRoute(),
+  new UserRoute(),
+  new CommentRoute(),
+  new PostRoute(),
+]);
 
 app
   .listen()

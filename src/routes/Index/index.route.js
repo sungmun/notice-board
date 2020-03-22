@@ -3,12 +3,12 @@ import IndexController from '../../controllers/index.controller';
 
 export class IndexRoute {
   constructor() {
-    this.path = '/';
+    this.path = '';
     this.router = Router();
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    this.router.get(`${this.path}`, IndexController.index);
+    this.router.get(`/`, IndexController.index);
   }
 }
